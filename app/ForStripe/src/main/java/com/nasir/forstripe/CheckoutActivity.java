@@ -2,6 +2,7 @@ package com.nasir.forstripe;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,7 @@ public class CheckoutActivity extends AppCompatActivity {
     PaymentSheet paymentSheet;
     String paymentIntentClientSecret;
     PaymentSheet.CustomerConfiguration customerConfig;
+    Button googlePayButton;
     private void presentPaymentSheet(JSONObject result) {
         try {
             customerConfig = new PaymentSheet.CustomerConfiguration(
@@ -27,18 +29,18 @@ public class CheckoutActivity extends AppCompatActivity {
                     result.getString("ephemeralKey")
             );
             paymentIntentClientSecret = result.getString("paymentIntent");
-            PaymentConfiguration.init(getApplicationContext(), result.getString("publishableKey"));
+//            PaymentConfiguration.init(getApplicationContext(), result.getString("publishableKey"));
             final PaymentSheet.GooglePayConfiguration googlePayConfiguration =
                     new PaymentSheet.GooglePayConfiguration(
                             PaymentSheet.GooglePayConfiguration.Environment.Test,
-                            "EU"
+                            "UK"
                     );
             final PaymentSheet.Configuration configuration = new PaymentSheet.Configuration.Builder("Riwada Limited")
                     .customer(customerConfig)
                     .googlePay(googlePayConfiguration)
                     // Set `allowsDelayedPaymentMethods` to true if your business handles payment methods
                     // delayed notification payment methods like US bank accounts.
-                    .allowsDelayedPaymentMethods(true)
+                    .allowsDelayedPaymentMethods(false)
                     .build();
 
             paymentSheet.presentWithPaymentIntent(
@@ -53,6 +55,9 @@ public class CheckoutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PaymentConfiguration.init(getApplicationContext(), "pk_test_51JNJAKAlgv1qjn5615i04uAwSaXinEmyU0BISCceLkJxcnsliNsaWOlxOxhEAZGoa1MoOna8WKlTnzQmwszkr3tO00MQx2ylZL");
+        googlePayButton = findViewById(R.id.google_pay_button);
         paymentSheet = new PaymentSheet(this, this::onPaymentSheetResult);
         Fuel.INSTANCE.post("https://outstanding-deploy-a07yl.ampt.app//api/sheet", null).responseString(new Handler<String>() {
             @Override
